@@ -7,8 +7,8 @@ const initDb = require('./config/initDb');
 const authRoutes = require('./routes/authRouth');
 const documentRoutes = require('./routes/documentRoutes');
 const { authenticate, authorize } = require('./middleware/authMiddleware');
+const { connectQueue } = require('./utils/rabbitmq');
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());
@@ -43,6 +43,9 @@ const PORT = process.env.PORT || 5001;
 
 //connect mongo
 connectMongo();
+
+//connect rabbitmq
+connectQueue();
 
 //connect DB and initialize tables, then start server
 pool.connect().then(async () => {

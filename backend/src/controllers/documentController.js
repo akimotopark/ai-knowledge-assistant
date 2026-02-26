@@ -1,6 +1,7 @@
 const multer = require('multer');
 const DocumentContent = require('../models/documentMongoModel');
 const { createDocumentMetaData } = require('../models/documentModel');
+const { publishToQueue } = require('../utils/rabbitmq');
 
 const upload = multer({
     storage: multer.memoryStorage()
@@ -27,6 +28,11 @@ const uploadDocument = async (req, res) => {
             documentId: metadata.id,
             filename: file.originalname,
             content: file.buffer.toString()
+        });
+
+        // 3️⃣ Publish job to queue
+        await publishToQueue({
+            documentId: metadata.id
         });
 
         res.status(201).json({ message: 'Document uploaded successfully', metadata });

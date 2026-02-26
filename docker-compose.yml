@@ -12,6 +12,23 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  mongo:
+    image: mongo:6
+    container_name: ai_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ai_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   backend:
     build: ./backend
     container_name: ai_backend
@@ -27,19 +44,38 @@ services:
       DB_PORT: 5432
       JWT_SECRET: supersecretkey
       MONGO_URI: mongodb://mongo:27017/ai_assistant
+      RABBITMQ_URL: amqp://rabbitmq
     depends_on:
       - postgres
       - mongo
+      - rabbitmq
     command: [ "npm", "run", "dev" ]
 
-  mongo:
-    image: mongo:6
-    container_name: ai_mongo
+  worker:
+    build: ./worker
+    container_name: ai_worker
     restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+    depends_on:
+      - rabbitmq
+      - mongo
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_NAME: ai_assistant
+      DB_PORT: 5432
+      MONGO_URI: mongodb://mongodb:27017/ai_assistant
+      RABBITMQ_URL: amqp://rabbitmq
+
+    chroma:
+      image: chromadb/chroma
+      container_name: ai_chroma
+      restart: always
+      ports:
+        - "8000:8000"
+      volumes:
+        - chroma_data:/chroma/.chroma/index
 
 volumes:
   postgres_data:
