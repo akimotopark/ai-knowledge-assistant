@@ -28,10 +28,7 @@ services:
       JWT_SECRET: supersecretkey
     depends_on:
       - postgres
-    volumes:
-      - backend_data:/app
     command: [ "npm", "run", "dev" ]
 
 volumes:
   postgres_data:
-  backend_data:
