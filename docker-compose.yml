@@ -59,24 +59,27 @@ services:
       - rabbitmq
       - mongo
       - postgres
+      - chroma
     environment:
       DB_HOST: postgres
       DB_USER: admin
       DB_PASSWORD: password
       DB_NAME: ai_assistant
       DB_PORT: 5432
-      MONGO_URI: mongodb://mongodb:27017/ai_assistant
+      MONGO_URI: mongodb://mongo:27017/ai_assistant
       RABBITMQ_URL: amqp://rabbitmq
+      CHROMA_URL: http://chroma:8000
+      OPENAI_API_KEY: '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'
 
-    chroma:
-      image: chromadb/chroma
-      container_name: ai_chroma
-      restart: always
-      ports:
-        - "8000:8000"
-      volumes:
-        - chroma_data:/chroma/.chroma/index
-
+  chroma:
+    image: chromadb/chroma
+    container_name: ai_chroma
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/.chroma/index
 volumes:
   postgres_data:
   mongo_data:
+  chroma_data:

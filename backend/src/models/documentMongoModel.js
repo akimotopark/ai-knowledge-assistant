@@ -2,9 +2,12 @@ const mongoose = require('mongoose');
 
 const documentSchema = new mongoose.Schema({
     documentId: Number,
-    filenName: String,
+    filename: String,
     content: String,
-}, { timestamps: true });
+}, {
+    timestamps: true,
+    collection: 'documents'
+});
 
 const Document = mongoose.model('Document', documentSchema);
 

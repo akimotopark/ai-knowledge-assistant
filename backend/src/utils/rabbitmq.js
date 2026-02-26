@@ -19,7 +19,7 @@ const publishToQueue = async (message) => {
         if (!channel) {
             await connectQueue();
         }
-        channel.sendToQueue('document_queue', Buffer.from(message));
+        channel.sendToQueue('document_queue', Buffer.from(JSON.stringify(message)));
     } catch (error) {
         console.error('Error publishing to RabbitMQ:', error);
     }

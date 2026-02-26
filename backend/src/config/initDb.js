@@ -47,8 +47,23 @@ const initDb = async () => {
     try {
         for (const table of tables) {
             await pool.query(table.sql);
-            console.log(`  ✔ Table "${table.name}" is ready`);
+            console.log(`  ✔ Table "${table.name}" checked/created`);
         }
+
+        // 🛠️ Migration: Ensure status and processed_at exist in documents
+        await pool.query(`
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='documents' AND column_name='status') THEN
+                    ALTER TABLE documents ADD COLUMN status VARCHAR(50) DEFAULT 'pending';
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='documents' AND column_name='processed_at') THEN
+                    ALTER TABLE documents ADD COLUMN processed_at TIMESTAMP;
+                END IF;
+            END $$;
+        `);
+        console.log('  ✔ Table "documents" migrations applied');
+
         console.log('Database tables initialized');
     } catch (error) {
         console.error('Failed to initialize database tables:', error);
