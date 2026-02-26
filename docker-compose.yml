@@ -26,9 +26,21 @@ services:
       DB_NAME: ai_assistant
       DB_PORT: 5432
       JWT_SECRET: supersecretkey
+      MONGO_URI: mongodb://mongo:27017/ai_assistant
     depends_on:
       - postgres
+      - mongo
     command: [ "npm", "run", "dev" ]
+
+  mongo:
+    image: mongo:6
+    container_name: ai_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
 volumes:
   postgres_data:
+  mongo_data:
