@@ -45,10 +45,16 @@ services:
       JWT_SECRET: supersecretkey
       MONGO_URI: mongodb://mongo:27017/ai_assistant
       RABBITMQ_URL: amqp://rabbitmq
+      CHROMA_URL: http://chroma:8000
+      OPENAI_API_KEY: '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'
+      GEMINI_API_KEY: 'AIzaSyC5AL_VtFS-LvB1I_WyW4zdSMe6luD6XaQ'
     depends_on:
       - postgres
       - mongo
       - rabbitmq
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     command: [ "npm", "run", "dev" ]
 
   worker:
@@ -70,6 +76,10 @@ services:
       RABBITMQ_URL: amqp://rabbitmq
       CHROMA_URL: http://chroma:8000
       OPENAI_API_KEY: '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'
+      GEMINI_API_KEY: 'AIzaSyC5AL_VtFS-LvB1I_WyW4zdSMe6luD6XaQ'
+    volumes:
+      - ./worker:/app
+      - /app/node_modules
 
   chroma:
     image: chromadb/chroma

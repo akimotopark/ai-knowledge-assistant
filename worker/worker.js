@@ -3,10 +3,15 @@ const amqp = require('amqplib');
 const mongoose = require('mongoose');
 const { Pool } = require('pg');
 const { ChromaClient } = require('chromadb');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const OpenAI = require('openai');
 const DocumentContent = require('./models/documentContent');
 
-// connect open AI api
+// connect Gemini AI api
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const geminiEmbeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
+
+// connect open AI api (kept for LLM if needed)
 const openai = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey: process.env.OPENAI_API_KEY,
@@ -39,20 +44,21 @@ function chunkText(text, chunkSize = 500, overlap = 50) {
     return chunks;
 }
 
-//generate embeddings
+//generate embeddings using Gemini
 async function generateEmbedding(text) {
-    const response = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: text,
+    const response = await geminiEmbeddingModel.embedContent({
+        content: { parts: [{ text }] },
+        taskType: "RETRIEVAL_DOCUMENT",
     });
-    return response.data[0].embedding;
+    return response.embedding.values;
 }
 
 //store vector in chroma
 async function storeInChroma(documentId, chunks, embeddings) {
+    console.log(`Storing ${chunks.length} chunks for document ${documentId} in Chroma...`);
     const collection = await chroma.getOrCreateCollection({
         name: 'documents',
-        embeddingFunction: { generate: (texts) => Promise.resolve([]) }
+        embeddingFunction: { generate: async (texts) => embeddings } // Dummy but valid structure
     });
 
     await collection.add({
@@ -63,12 +69,13 @@ async function storeInChroma(documentId, chunks, embeddings) {
             documentId: documentId,
         })),
     });
+    console.log(`Successfully added to Chroma collection`);
 }
 
 async function startWorker() {
     // Wait for services to be ready
     console.log("Waiting for services to start...");
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
     const channel = await connection.createChannel();
@@ -76,7 +83,10 @@ async function startWorker() {
     console.log("worker waiting for the message ....");
 
     channel.consume('document_queue', async (msg) => {
-        const { documentId } = JSON.parse(msg.content.toString());
+        if (!msg) return;
+        const messageContent = msg.content.toString();
+        console.log(`[Worker] Received message from queue: ${messageContent}`);
+        const { documentId } = JSON.parse(messageContent);
 
         console.log(`Processing document ${documentId}`);
 
@@ -93,10 +103,18 @@ async function startWorker() {
             // 2️⃣ Chunk the content
             const chunks = chunkText(document.content);
 
-            // 3️⃣ Generate embeddings
-            const embeddings = await Promise.all(
-                chunks.map(chunk => generateEmbedding(chunk))
-            );
+            // 3️⃣ Generate embeddings (in batches to avoid high CPU/Memory/Rate-limits)
+            console.log(`Generating embeddings for ${chunks.length} chunks...`);
+            const embeddings = [];
+            const batchSize = 10;
+            for (let i = 0; i < chunks.length; i += batchSize) {
+                const batch = chunks.slice(i, i + batchSize);
+                const batchEmbeddings = await Promise.all(
+                    batch.map(chunk => generateEmbedding(chunk))
+                );
+                embeddings.push(...batchEmbeddings);
+                console.log(`  Processed ${embeddings.length}/${chunks.length} chunks...`);
+            }
 
             // 4️⃣ Store in Chroma
             await storeInChroma(documentId, chunks, embeddings);
@@ -108,9 +126,11 @@ async function startWorker() {
             );
 
             console.log(`✅ Document ${documentId} processed successfully`);
+            channel.ack(msg);
         } catch (error) {
             console.error('Error processing document:', error);
-            channel.nack(msg);
+            // Don't requeue if it's a credits or connection issue to avoid CPU spike
+            channel.nack(msg, false, false);
         }
     });
 }

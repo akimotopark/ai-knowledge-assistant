@@ -14,8 +14,8 @@ const authenticate = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        console.error("Error in authenticate:", error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Error in authenticate:", error.message);
+        res.status(401).json({ message: "Unauthorized - Token invalid or expired" });
     }
 }
 

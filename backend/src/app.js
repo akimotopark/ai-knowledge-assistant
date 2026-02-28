@@ -4,10 +4,11 @@ const cors = require('cors');
 const pool = require('./config/db');
 const connectMongo = require('./config/mongo');
 const initDb = require('./config/initDb');
-const authRoutes = require('./routes/authRouth');
+const authRoutes = require('./routes/authRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 const { authenticate, authorize } = require('./middleware/authMiddleware');
 const { connectQueue } = require('./utils/rabbitmq');
+const ragRoutes = require('./routes/ragRoutes');
 const app = express();
 
 app.use(cors());
@@ -34,6 +35,9 @@ app.get("/api/admin", authenticate, authorize("admin"), (req, res) => {
 //document routes 
 app.use('/api/documents', documentRoutes);
 
+//rag routes
+app.use('/api/rag', ragRoutes);
+
 // 404 catch-all for undefined routes
 app.use((req, res) => {
     res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
@@ -44,17 +48,25 @@ const PORT = process.env.PORT || 5001;
 //connect mongo
 connectMongo();
 
-//connect rabbitmq
-connectQueue();
-
-//connect DB and initialize tables, then start server
-pool.connect().then(async () => {
-    console.log('Connected to database');
-    await initDb();
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}).catch((err) => {
-    console.error('Failed to connect to database', err);
-    process.exit(1);
-});
+async function startServer() {
+    const maxRetries = 10;
+    let retries = 0;
+    while (retries < maxRetries) {
+        try {
+            await pool.connect();
+            console.log('Connected to database');
+            await initDb();
+            app.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+            });
+            connectQueue();
+            return;
+        } catch (err) {
+            retries++;
+            console.error(`Failed to connect to database (attempt ${retries}/${maxRetries}):`, err.message);
+            if (retries >= maxRetries) process.exit(1);
+            await new Promise(res => setTimeout(res, 3000));
+        }
+    }
+}
+startServer();
