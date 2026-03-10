@@ -1,0 +1,30 @@
+<div class="chat-container">
+
+    <h2>AI Knowledge Assistant</h2>
+
+    <div class="chat-box">
+
+        <div *ngFor="let msg of messages()" [ngClass]="msg.role">
+
+            <div class="bubble">
+                {{ msg.content }}
+            </div>
+
+        </div>
+
+        <div *ngIf="loading()" class="assistant">
+            <div class="bubble">Thinking...</div>
+        </div>
+
+    </div>
+
+    <div class="input-area">
+        <input type="text" [ngModel]="question()" (ngModelChange)="question.set($event)" placeholder="Ask a question..."
+            (keyup.enter)="sendQuestion()">
+
+        <button (click)="sendQuestion()" [disabled]="loading()">
+            Send
+        </button>
+    </div>
+
+</div>

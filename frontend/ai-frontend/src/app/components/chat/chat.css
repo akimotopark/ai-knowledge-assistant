@@ -1,0 +1,43 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chat-box {
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 10px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.user {
+    text-align: right;
+}
+
+.assistant {
+    text-align: left;
+}
+
+.bubble {
+    display: inline-block;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.user .bubble {
+    background-color: #2563eb;
+    color: white;
+}
+
+.assistant .bubble {
+    background-color: #e5e7eb;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+}
