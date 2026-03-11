@@ -1,0 +1,12 @@
+table {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.uploaded {
+    color: orange;
+}
+
+.indexed {
+    color: green;
+}

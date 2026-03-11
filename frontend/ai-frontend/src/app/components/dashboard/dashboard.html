@@ -7,6 +7,9 @@
             <a routerLink="/dashboard">Dashboard</a>
             <a routerLink="/documents">Documents</a>
             <a routerLink="/chat">Chat</a>
+            @if (authGuard.isAdmin()) {
+            <a routerLink="/admin">Admin Panel</a>
+            }
         </nav>
 
         <button (click)="logout()">Logout</button>

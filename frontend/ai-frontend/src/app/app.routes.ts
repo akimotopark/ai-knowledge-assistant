@@ -5,6 +5,7 @@ import { RegisterComponent } from './features/auth/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { DocumentsComponent } from './components/documents/documents.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { Admin } from './components/admin/admin'
 
 
 export const routes: Routes = [
@@ -23,6 +24,11 @@ export const routes: Routes = [
     {
         path: 'chat',
         component: ChatComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'admin',
+        component: Admin,
         canActivate: [authGuard]
     },
     { path: '', redirectTo: 'login', pathMatch: 'full' }

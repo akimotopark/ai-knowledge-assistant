@@ -1,0 +1,31 @@
+<h2>Admin Panel - Document Monitoring</h2>
+
+<button (click)="loadDocuments()">Refresh</button>
+
+<div *ngIf="loading()">Loading...</div>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Uploaded By</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr *ngFor="let doc of documents()">
+            <td>{{ doc.id }}</td>
+            <td>{{ doc.title }}</td>
+            <td>
+                <span [ngClass]="doc.status">
+                    {{ doc.status }}
+                </span>
+            </td>
+            <td>{{ doc.uploaded_by }}</td>
+            <td>{{ doc.created_at | date:'short' }}</td>
+        </tr>
+    </tbody>
+</table>

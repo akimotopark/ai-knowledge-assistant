@@ -31,6 +31,13 @@ export class AuthService {
         this.currentUserToken.set(token);
     }
 
+    getToken(): string | null {
+        if (isPlatformBrowser(this.platformId)) {
+            return localStorage.getItem('token');
+        }
+        return null;
+    }
+
     logout() {
         if (isPlatformBrowser(this.platformId)) {
             localStorage.removeItem('token');

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AuthGuard } from '../../features/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,14 +12,11 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './dashboard.css',
 })
 export class DashboardComponent {
-
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) { }
+  public authGuard = inject(AuthGuard);
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   logout() {
     this.auth.logout();
   }
-
 }

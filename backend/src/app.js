@@ -9,6 +9,7 @@ const documentRoutes = require('./routes/documentRoutes');
 const { authenticate, authorize } = require('./middleware/authMiddleware');
 const { connectQueue } = require('./utils/rabbitmq');
 const ragRoutes = require('./routes/ragRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
 app.use(cors());
@@ -28,12 +29,11 @@ app.use('/api/auth', authRoutes);
 app.get('/api/protected', authenticate, (req, res) => {
     res.status(200).json({ message: 'Protected route', user: req.user });
 });
-app.get("/api/admin", authenticate, authorize("admin"), (req, res) => {
-    res.status(200).json({ message: "Admin route", user: req.user });
-})
+// (adminRoutes handles this path now)
 
 //document routes 
 app.use('/api/documents', documentRoutes);
+app.use('/api/admin', adminRoutes);
 
 //rag routes
 app.use('/api/rag', ragRoutes);
