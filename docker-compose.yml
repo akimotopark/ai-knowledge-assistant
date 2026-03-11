@@ -33,8 +33,6 @@ services:
     build: ./backend
     container_name: ai_backend
     restart: always
-    ports:
-      - "5001:5001"
     environment:
       PORT: 5001
       DB_HOST: postgres
@@ -56,6 +54,15 @@ services:
       - ./backend:/app
       - /app/node_modules
     command: [ "npm", "run", "dev" ]
+
+  frontend:
+    build: ./frontend
+    container_name: ai_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
   worker:
     build: ./worker
