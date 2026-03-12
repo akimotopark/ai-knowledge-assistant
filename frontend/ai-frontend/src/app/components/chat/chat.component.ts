@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,16 +15,28 @@ interface Message {
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
-export class ChatComponent {
+export class ChatComponent implements AfterViewChecked {
   private api = inject(ApiService);
+  
+  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
   question = signal('');
   loading = signal(false);
   messages = signal<Message[]>([]);
 
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+    } catch (err) { }
+  }
+
   async sendQuestion() {
     const q = this.question().trim();
-    if (!q) return;
+    if (!q || this.loading()) return;
 
     this.messages.update(m => [...m, { role: 'user', content: q }]);
     this.question.set('');
@@ -32,17 +44,14 @@ export class ChatComponent {
 
     this.api.post<any>('rag/ask', { question: q }).subscribe({
       next: (res) => {
-        console.log('Chat success:', res);
         this.loading.set(false);
-        this.messages.update(m => [...m, { role: 'assistant', content: res?.answer || 'No answer' }]);
+        this.messages.update(m => [...m, { role: 'assistant', content: res?.answer || 'I couldn\'t find any information on that.' }]);
       },
       error: (err) => {
         console.error('Chat error:', err);
         this.loading.set(false);
-        this.messages.update(m => [...m, { role: 'assistant', content: 'Error: ' + err }]);
+        this.messages.update(m => [...m, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again later.' }]);
       }
-    })
-
+    });
   }
-
 }

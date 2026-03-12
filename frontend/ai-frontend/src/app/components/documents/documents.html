@@ -1,26 +1,31 @@
-<div class="upload-container">
-    <h2>Upload Document</h2>
+<div class="docs-container">
+    <header class="page-header">
+        <h2>Documents</h2>
+        <p>Upload your knowledge files (txt, pdf) to train the AI assistant.</p>
+    </header>
 
-    <div *ngIf="message()" class="message-banner" [class.error]="message().includes('failed')">
-        {{ message() }}
+    <div class="upload-card">
+        <form (submit)="$event.preventDefault(); upload()" class="form-group">
+            <div class="upload-icon">📤</div>
+            
+            <input type="text" [(ngModel)]="title" name="title" placeholder="Document Title" class="input-field" required>
+            
+            <textarea [(ngModel)]="description" name="description" placeholder="Short Description" class="input-field" rows="3"></textarea>
+
+            <div>
+                <label for="file-upload" class="file-label">
+                    📁 {{ selectedFile ? selectedFile.name : 'Choose a file' }}
+                </label>
+                <input id="file-upload" type="file" (change)="onFileSelected($event)" class="file-input">
+            </div>
+
+            <button type="submit" [disabled]="loading() || !selectedFile || !title()" class="submit-btn">
+                {{ loading() ? 'Uploading...' : 'Upload Document' }}
+            </button>
+        </form>
+
+        <p *ngIf="message()" class="status-msg" [ngClass]="{'success': message().toLowerCase().includes('success'), 'error': message().toLowerCase().includes('fail')}">
+            {{ message() }}
+        </p>
     </div>
-
-    <div class="form-group">
-        <label for="doc-title">Title</label>
-        <input id="doc-title" type="text" [ngModel]="title()" (ngModelChange)="title.set($event)" name="title" placeholder="Document Title">
-    </div>
-
-    <div class="form-group">
-        <label for="doc-desc">Description</label>
-        <textarea id="doc-desc" [ngModel]="description()" (ngModelChange)="description.set($event)" name="description" placeholder="Enter description..."></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="doc-file">Select File</label>
-        <input id="doc-file" type="file" (change)="onFileSelected($event)" name="file">
-    </div>
-
-    <button class="upload-btn" (click)="upload()" [disabled]="loading()">
-        {{ loading() ? 'Uploading...' : 'Upload Now' }}
-    </button>
 </div>

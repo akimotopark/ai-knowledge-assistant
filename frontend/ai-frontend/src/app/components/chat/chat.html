@@ -1,30 +1,48 @@
 <div class="chat-container">
+    <header class="chat-header">
+        <span class="status-dot"></span>
+        <h2>AI Knowledge Assistant</h2>
+    </header>
 
-    <h2>AI Knowledge Assistant</h2>
+    <div class="chat-box" #scrollMe>
+        @if (messages().length === 0) {
+            <div style="text-align: center; color: #94a3b8; margin: auto; padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👋</div>
+                <p>Hello! I'm your knowledge assistant.<br>Ask me anything about your documents.</p>
+            </div>
+        }
 
-    <div class="chat-box">
-
-        <div *ngFor="let msg of messages()" [ngClass]="msg.role">
-
+        <div *ngFor="let msg of messages()" class="message-wrapper" [ngClass]="msg.role">
             <div class="bubble">
                 {{ msg.content }}
             </div>
-
+            <span class="meta">{{ msg.role === 'user' ? 'You' : 'Assistant' }}</span>
         </div>
 
-        <div *ngIf="loading()" class="assistant">
-            <div class="bubble">Thinking...</div>
+        @if (loading()) {
+            <div class="message-wrapper assistant">
+                <div class="bubble">
+                    <div class="typing">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="input-area-wrapper">
+        <div class="input-container">
+            <input type="text" 
+                   [ngModel]="question()" 
+                   (ngModelChange)="question.set($event)" 
+                   placeholder="Type your message..."
+                   (keyup.enter)="sendQuestion()">
+            
+            <button (click)="sendQuestion()" [disabled]="loading() || !question().trim()">
+                <span class="send-icon">🚀</span>
+            </button>
         </div>
-
     </div>
-
-    <div class="input-area">
-        <input type="text" [ngModel]="question()" (ngModelChange)="question.set($event)" placeholder="Ask a question..."
-            (keyup.enter)="sendQuestion()">
-
-        <button (click)="sendQuestion()" [disabled]="loading()">
-            Send
-        </button>
-    </div>
-
 </div>

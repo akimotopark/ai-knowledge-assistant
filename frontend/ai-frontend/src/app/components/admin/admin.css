@@ -1,12 +1,98 @@
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h2 {
+    font-size: 1.875rem;
+    font-weight: 800;
+}
+
+.refresh-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.refresh-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Table Design */
+.table-wrapper {
+    background: white;
+    border-radius: 1.25rem;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
 table {
-    margin-top: 20px;
     width: 100%;
+    border-collapse: collapse;
+    text-align: left;
 }
 
-.uploaded {
-    color: orange;
+th {
+    background: #f8fafc;
+    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.indexed {
-    color: green;
+td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9375rem;
+    color: #334155;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #fcfcfd;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.processed {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.uploading, .pending {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.failed {
+    background: #fef2f2;
+    color: #dc2626;
 }

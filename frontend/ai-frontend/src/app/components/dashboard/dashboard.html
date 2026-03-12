@@ -1,23 +1,39 @@
-<div class="layout">
+<div class="dashboard-page">
+    <header class="page-header">
+        <h1>Dashboard</h1>
+        <p>Welcome back! Here's an overview of your knowledge base.</p>
+    </header>
 
-    <aside class="sidebar">
-        <h3>AI Assistant</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Documents</h3>
+            <p class="value">24</p>
+        </div>
+        <div class="stat-card">
+            <h3>Recent Uploads</h3>
+            <p class="value">3</p>
+        </div>
+        <div class="stat-card">
+            <h3>AI Interactions</h3>
+            <p class="value">128</p>
+        </div>
+    </div>
 
-        <nav>
-            <a routerLink="/dashboard">Dashboard</a>
-            <a routerLink="/documents">Documents</a>
-            <a routerLink="/chat">Chat</a>
-            @if (authGuard.isAdmin()) {
-            <a routerLink="/admin">Admin Panel</a>
-            }
-        </nav>
-
-        <button (click)="logout()">Logout</button>
-    </aside>
-
-    <main class="content">
-        <h2>Welcome to the Dashboard</h2>
-        <p>Your enterprise AI system is running.</p>
-    </main>
-
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+        <a routerLink="/documents" class="action-card">
+            <div class="action-icon">📂</div>
+            <div>
+                <div style="font-weight: 600;">Upload Files</div>
+                <div style="font-size: 0.875rem; color: #64748b;">Add new knowledge</div>
+            </div>
+        </a>
+        <a routerLink="/chat" class="action-card">
+            <div class="action-icon">💬</div>
+            <div>
+                <div style="font-weight: 600;">Start Chat</div>
+                <div style="font-size: 0.875rem; color: #64748b;">Ask questions to AI</div>
+            </div>
+        </a>
+    </div>
 </div>

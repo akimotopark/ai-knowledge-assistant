@@ -1,31 +1,50 @@
-<h2>Admin Panel - Document Monitoring</h2>
+<div class="admin-container">
+    <header class="admin-header">
+        <div>
+            <h2>Document Monitoring</h2>
+            <p style="color: #64748b;">Manage and monitor all knowledge base documents.</p>
+        </div>
+        <button (click)="loadDocuments()" class="refresh-btn">
+            🔄 Refresh Data
+        </button>
+    </header>
 
-<button (click)="loadDocuments()">Refresh</button>
+    <div *ngIf="loading()" style="text-align: center; padding: 2rem;">
+        <span style="color: #64748b;">Loading metrics...</span>
+    </div>
 
-<div *ngIf="loading()">Loading...</div>
-
-<table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Uploaded By</th>
-            <th>Created</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <tr *ngFor="let doc of documents()">
-            <td>{{ doc.id }}</td>
-            <td>{{ doc.title }}</td>
-            <td>
-                <span [ngClass]="doc.status">
-                    {{ doc.status }}
-                </span>
-            </td>
-            <td>{{ doc.uploaded_by }}</td>
-            <td>{{ doc.created_at | date:'short' }}</td>
-        </tr>
-    </tbody>
-</table>
+    <div class="table-wrapper">
+        <table border="0">
+            <thead>
+                <tr>
+                    <th>Document</th>
+                    <th>Status</th>
+                    <th>Uploader</th>
+                    <th>Date Added</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let doc of documents()">
+                    <td>
+                        <div style="font-weight: 600; color: #1e293b;">{{ doc.title }}</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">ID: {{ doc.id }}</div>
+                    </td>
+                    <td>
+                        <span class="status-badge" [ngClass]="doc.status">
+                            {{ doc.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">👤</div>
+                            {{ doc.uploaded_by }}
+                        </div>
+                    </td>
+                    <td style="color: #64748b;">
+                        {{ doc.created_at | date:'MMM d, y, h:mm a' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

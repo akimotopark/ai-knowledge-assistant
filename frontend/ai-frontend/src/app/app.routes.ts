@@ -5,31 +5,24 @@ import { RegisterComponent } from './features/auth/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { DocumentsComponent } from './components/documents/documents.component';
 import { ChatComponent } from './components/chat/chat.component';
-import { Admin } from './components/admin/admin'
+import { Admin } from './components/admin/admin';
+import { MainLayoutComponent } from './core/layout/main-layout.component';
 
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [authGuard]
+        path: '',
+        component: MainLayoutComponent,
+        canActivate: [authGuard],
+        children: [
+            { path: 'dashboard', component: DashboardComponent },
+            { path: 'documents', component: DocumentsComponent },
+            { path: 'chat', component: ChatComponent },
+            { path: 'admin', component: Admin },
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+        ]
     },
-    {
-        path: 'documents',
-        component: DocumentsComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'chat',
-        component: ChatComponent,
-        canActivate: [authGuard]
-    },
-    {
-        path: 'admin',
-        component: Admin,
-        canActivate: [authGuard]
-    },
-    { path: '', redirectTo: 'login', pathMatch: 'full' }
+    { path: '**', redirectTo: 'login' }
 ];
