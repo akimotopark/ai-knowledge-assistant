@@ -58,6 +58,7 @@ async function storeInChroma(documentId, chunks, embeddings) {
     console.log(`Storing ${chunks.length} chunks for document ${documentId} in Chroma...`);
     const collection = await chroma.getOrCreateCollection({
         name: 'documents',
+        embeddingFunction: { generate: async (texts) => [] }
     });
 
     await collection.add({
@@ -106,16 +107,23 @@ async function startWorker() {
             // 3️⃣ Generate embeddings (in batches to avoid high CPU/Memory/Rate-limits)
             console.log(`Generating embeddings for ${chunks.length} chunks...`);
             const embeddings = [];
-            const batchSize = 5; // Reduced batch size
-            for (let i = 0; i < chunks.length; i += batchSize) {
-                const batch = chunks.slice(i, i + batchSize);
-                const batchEmbeddings = await Promise.all(
-                    batch.map(chunk => generateEmbedding(chunk))
-                );
-                embeddings.push(...batchEmbeddings);
-                console.log(`  Processed ${embeddings.length}/${chunks.length} chunks...`);
-                // Base delay to respect rate limits
-                await new Promise(resolve => setTimeout(resolve, 500));
+            for (let i = 0; i < chunks.length; i++) {
+                const chunk = chunks[i];
+                try {
+                    const embedding = await generateEmbedding(chunk);
+                    embeddings.push(embedding);
+                    console.log(`  Processed ${i + 1}/${chunks.length} chunks...`);
+                    // Delay to stay within Gemini free tier rate limits (~15 RPM)
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                } catch (err) {
+                    if (err.status === 429) {
+                        console.log("Rate limit hit, waiting 30 seconds...");
+                        await new Promise(resolve => setTimeout(resolve, 30000));
+                        i--; // Retry this chunk
+                    } else {
+                        throw err;
+                    }
+                }
             }
 
             // 4️⃣ Store in Chroma

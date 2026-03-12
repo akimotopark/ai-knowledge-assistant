@@ -13,8 +13,7 @@
         }
 
         <div *ngFor="let msg of messages()" class="message-wrapper" [ngClass]="msg.role">
-            <div class="bubble">
-                {{ msg.content }}
+            <div class="bubble" [innerHTML]="parseMarkdown(msg.content)">
             </div>
             <span class="meta">{{ msg.role === 'user' ? 'You' : 'Assistant' }}</span>
         </div>

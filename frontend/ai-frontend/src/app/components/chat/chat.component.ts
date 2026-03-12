@@ -1,7 +1,10 @@
-import { Component, signal, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, signal, inject, ViewChild, ElementRef, AfterViewChecked, SecurityContext } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,6 +20,7 @@ interface Message {
 })
 export class ChatComponent implements AfterViewChecked {
   private api = inject(ApiService);
+  private sanitizer = inject(DomSanitizer);
   
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
@@ -53,5 +57,10 @@ export class ChatComponent implements AfterViewChecked {
         this.messages.update(m => [...m, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again later.' }]);
       }
     });
+  }
+  parseMarkdown(content: string): SafeHtml {
+    const rawHtml = marked.parse(content) as string;
+    const cleanHtml = DOMPurify.sanitize(rawHtml);
+    return this.sanitizer.bypassSecurityTrustHtml(cleanHtml);
   }
 }

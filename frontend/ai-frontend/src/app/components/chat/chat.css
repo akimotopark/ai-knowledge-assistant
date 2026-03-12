@@ -63,6 +63,16 @@
     align-items: flex-start;
 }
 
+/* Entrance Animation */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-wrapper {
+    animation: slideUp 0.3s ease-out forwards;
+}
+
 /* Bubbles */
 .bubble {
     padding: 0.875rem 1.125rem;
@@ -84,6 +94,57 @@
     color: #334155;
     border: 1px solid #e2e8f0;
     border-bottom-left-radius: 0.25rem;
+}
+
+/* Markdown Specific Styles inside Bubbles */
+.bubble ::ng-deep p:first-child { margin-top: 0; }
+.bubble ::ng-deep p:last-child { margin-bottom: 0; }
+
+.bubble ::ng-deep ul, .bubble ::ng-deep ol {
+    padding-left: 1.25rem;
+    margin: 0.5rem 0;
+}
+
+.bubble ::ng-deep li {
+    margin-bottom: 0.25rem;
+}
+
+.bubble ::ng-deep code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.85em;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.bubble ::ng-deep pre {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+}
+
+.bubble ::ng-deep pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: 0.875rem;
+}
+
+.bubble ::ng-deep strong {
+    font-weight: 600;
+}
+
+.bubble ::ng-deep h1, .bubble ::ng-deep h2, .bubble ::ng-deep h3 {
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1.1em;
+}
+
+.user .bubble ::ng-deep code {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 /* Metadata */
