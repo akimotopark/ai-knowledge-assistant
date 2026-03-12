@@ -58,7 +58,6 @@ async function storeInChroma(documentId, chunks, embeddings) {
     console.log(`Storing ${chunks.length} chunks for document ${documentId} in Chroma...`);
     const collection = await chroma.getOrCreateCollection({
         name: 'documents',
-        embeddingFunction: { generate: async (texts) => embeddings } // Dummy but valid structure
     });
 
     await collection.add({
@@ -80,6 +79,7 @@ async function startWorker() {
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
     const channel = await connection.createChannel();
     await channel.assertQueue('document_queue', { durable: true });
+    await channel.prefetch(1);
     console.log("worker waiting for the message ....");
 
     channel.consume('document_queue', async (msg) => {
@@ -106,7 +106,7 @@ async function startWorker() {
             // 3️⃣ Generate embeddings (in batches to avoid high CPU/Memory/Rate-limits)
             console.log(`Generating embeddings for ${chunks.length} chunks...`);
             const embeddings = [];
-            const batchSize = 10;
+            const batchSize = 5; // Reduced batch size
             for (let i = 0; i < chunks.length; i += batchSize) {
                 const batch = chunks.slice(i, i + batchSize);
                 const batchEmbeddings = await Promise.all(
@@ -114,6 +114,8 @@ async function startWorker() {
                 );
                 embeddings.push(...batchEmbeddings);
                 console.log(`  Processed ${embeddings.length}/${chunks.length} chunks...`);
+                // Base delay to respect rate limits
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
 
             // 4️⃣ Store in Chroma

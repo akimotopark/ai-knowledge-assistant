@@ -21,7 +21,6 @@ async function askQuestion(req, res) {
         console.log("Querying Chroma for question:", question);
         const collection = await chroma.getOrCreateCollection({
             name: "documents",
-            embeddingFunction: { generate: async (texts) => [queryEmbedding] }
         });
 
         const results = await collection.query({
