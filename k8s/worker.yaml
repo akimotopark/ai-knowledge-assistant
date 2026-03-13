@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: worker
-        image: ai-worker:latest # Replace with actual image path
+        image: ai-knowledge-assistant-worker:latest
+        imagePullPolicy: IfNotPresent
         env:
         - name: DB_HOST
           value: "postgres.ai-assistant.svc.cluster.local"
@@ -36,11 +37,6 @@ spec:
           value: "amqp://rabbitmq.ai-assistant.svc.cluster.local"
         - name: CHROMA_URL
           value: "http://chroma.ai-assistant.svc.cluster.local:8000"
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ai-assistant-secrets
-              key: openai-api-key
         - name: GEMINI_API_KEY
           valueFrom:
             secretKeyRef:

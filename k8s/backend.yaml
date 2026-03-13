@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ai-backend:latest # Replace with actual image path
+        image: ai-knowledge-assistant-backend:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5001
         env:
@@ -40,11 +41,6 @@ spec:
           value: "amqp://rabbitmq.ai-assistant.svc.cluster.local"
         - name: CHROMA_URL
           value: "http://chroma.ai-assistant.svc.cluster.local:8000"
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ai-assistant-secrets
-              key: openai-api-key
         - name: GEMINI_API_KEY
           valueFrom:
             secretKeyRef:

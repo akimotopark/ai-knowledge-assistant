@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: ai-frontend:latest # Replace with actual image path
+        image: ai-knowledge-assistant-frontend:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
 ---
