@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: ai-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: ai-backend:latest # Replace with actual image path
+        ports:
+        - containerPort: 5001
+        env:
+        - name: PORT
+          value: "5001"
+        - name: DB_HOST
+          value: "postgres.ai-assistant.svc.cluster.local"
+        - name: DB_USER
+          value: "admin"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ai-assistant-secrets
+              key: postgres-password
+        - name: DB_NAME
+          value: "ai_assistant"
+        - name: DB_PORT
+          value: "5432"
+        - name: MONGO_URI
+          value: "mongodb://mongodb.ai-assistant.svc.cluster.local:27017/ai_assistant"
+        - name: RABBITMQ_URL
+          value: "amqp://rabbitmq.ai-assistant.svc.cluster.local"
+        - name: CHROMA_URL
+          value: "http://chroma.ai-assistant.svc.cluster.local:8000"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-assistant-secrets
+              key: openai-api-key
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-assistant-secrets
+              key: gemini-api-key
+        - name: JWT_SECRET
+          value: "supersecretkey"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: ai-assistant
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 5001
+    targetPort: 5001
