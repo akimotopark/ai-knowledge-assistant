@@ -7,10 +7,12 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
+  styleUrl: './register.css',
   standalone: true,
   // ✅ Modern: We import what we need directly into the component
   imports: [CommonModule, FormsModule, RouterLink],
 })
+
 export class RegisterComponent {
   private auth = inject(AuthService);
   private router = inject(Router);

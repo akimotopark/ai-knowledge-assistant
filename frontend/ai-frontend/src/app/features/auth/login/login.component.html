@@ -1,7 +1,7 @@
 <div class="auth-page">
     <div class="auth-card">
         <header class="auth-header">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🤖</div>
+            <div class="logo-wrapper">🤖</div>
             <h2>Welcome Back</h2>
             <p>Enter your credentials to access your assistant.</p>
         </header>
@@ -9,12 +9,16 @@
         <form (submit)="onLogin()" class="form-group">
             <div class="input-container">
                 <label>Email Address</label>
-                <input type="email" [(ngModel)]="email" name="email" placeholder="name@company.com" class="input-field" required>
+                <input type="email" [(ngModel)]="email" name="email" placeholder="name@company.com" class="input-field" required autocomplete="email">
             </div>
 
             <div class="input-container">
                 <label>Password</label>
-                <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" class="input-field" required>
+                <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" class="input-field" required autocomplete="current-password">
+            </div>
+
+            <div *ngIf="error()" class="error-message">
+                {{ error() }}
             </div>
 
             <button type="submit" class="auth-btn">Sign In</button>

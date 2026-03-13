@@ -11,12 +11,6 @@ const DocumentContent = require('./models/documentContent');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const geminiEmbeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
-// connect open AI api (kept for LLM if needed)
-const openai = new OpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
 //create chroma 
 const chroma = new ChromaClient({ path: process.env.CHROMA_URL });
 

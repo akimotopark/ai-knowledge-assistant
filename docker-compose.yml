@@ -89,7 +89,7 @@ services:
       - /app/node_modules
 
   chroma:
-    image: chromadb/chroma
+    image: chromadb/chroma:1.4.1
     container_name: ai_chroma
     restart: always
     ports:
