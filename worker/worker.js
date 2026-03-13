@@ -58,7 +58,7 @@ async function storeInChroma(documentId, chunks, embeddings) {
     console.log(`Storing ${chunks.length} chunks for document ${documentId} in Chroma...`);
     const collection = await chroma.getOrCreateCollection({
         name: 'documents',
-        embeddingFunction: { generate: async (texts) => [] }
+        metadata: { "hnsw:space": "cosine" }
     });
 
     await collection.add({

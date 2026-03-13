@@ -11,7 +11,7 @@ async function generateQueryEmbedding(question) {
 
 async function askQuestion(req, res) {
     try {
-        const { question } = req.body;
+        const { question, documentId } = req.body;
         if (!question) {
             return res.status(400).json({ message: "Question is required" });
         }
@@ -21,7 +21,6 @@ async function askQuestion(req, res) {
         console.log("Querying Chroma for question:", question);
         const collection = await chroma.getOrCreateCollection({
             name: "documents",
-            embeddingFunction: { generate: async (texts) => [] }
         });
 
         const results = await collection.query({
