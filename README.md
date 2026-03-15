@@ -46,14 +46,19 @@ The project is built using a microservices-inspired architecture:
    ```
 
 2. **Environment Configuration:**
-   The `docker-compose.yml` is already pre-configured with development keys for the Gemini API. If you wish to use your own, update the `GEMINI_API_KEY` in the `backend` and `worker` service sections.
+   Create a `.env` file in the root directory (a `.env.example` is provided for reference). Update the following variables with your actual keys:
+   ```env
+   GEMINI_API_KEY=your_actual_gemini_key_here
+   JWT_SECRET=your_secret_identity_key
+   ```
+   The `docker-compose.yml` is configured to read these variables automatically. **Never commit your `.env` file to version control.**
 
 3. **Kick off the project (Development Mode):**
    Use the provided Makefile command to build and start all services (Frontend, Backend, Worker, DBs):
    ```bash
    make up-dev
    ```
-   *This command runs the containers with hot-reload enabled for both the backend and frontend.*
+   *This command runs the containers using the variables defined in your `.env` file.*
 
 4. **Access the Applications:**
    - **Frontend UI**: [http://localhost:4200](http://localhost:4200)
