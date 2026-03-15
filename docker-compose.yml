@@ -85,7 +85,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - chroma_data:/chroma/.chroma/index
+      - chroma_data:/data
 
 volumes:
   postgres_data:
