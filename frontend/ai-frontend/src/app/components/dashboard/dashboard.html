@@ -7,15 +7,16 @@
     <div class="stats-grid">
         <div class="stat-card">
             <h3>Total Documents</h3>
-            <p class="value">24</p>
+            <p class="value">{{ stats().totalDocuments }}</p>
         </div>
         <div class="stat-card">
             <h3>Recent Uploads</h3>
-            <p class="value">3</p>
+            <p class="value">{{ stats().recentUploads }}</p>
+            <span class="stat-subtitle">Last 7 days</span>
         </div>
         <div class="stat-card">
             <h3>AI Interactions</h3>
-            <p class="value">128</p>
+            <p class="value">{{ stats().aiInteractions }}</p>
         </div>
     </div>
 

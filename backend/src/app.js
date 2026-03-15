@@ -42,6 +42,10 @@ app.use('/api/rag', ragRoutes);
 const chatRoutes = require('./routes/chatRoutes');
 app.use('/api/chat', chatRoutes);
 
+//stats routes
+const statsRoutes = require('./routes/statsRoutes');
+app.use('/api/stats', statsRoutes);
+
 // 404 catch-all for undefined routes
 app.use((req, res) => {
     res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });

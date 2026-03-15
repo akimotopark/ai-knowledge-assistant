@@ -55,6 +55,13 @@
     color: #1e293b;
 }
 
+.stat-subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    display: block;
+    margin-top: 0.25rem;
+}
+
 /* Quick Actions Section */
 .section-title {
     font-size: 1.25rem;
