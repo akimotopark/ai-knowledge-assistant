@@ -1,6 +1,10 @@
 # AI Knowledge Assistant 🧠🤖
 
+![AI Knowledge Assistant](ai-knowedge-assistant.png)
+
 A powerful, full-stack Retrieval-Augmented Generation (RAG) platform that allows users to upload documents (PDF, TXT) and have intelligent, persistent conversations with an AI assistant based on those documents.
+
+
 
 ## 🌟 Key Features
 
