@@ -24,7 +24,20 @@
             </button>
         </form>
 
-        <p *ngIf="message()" class="status-msg" [ngClass]="{'success': message().toLowerCase().includes('success'), 'error': message().toLowerCase().includes('fail')}">
+        <div *ngIf="isProcessing()" class="processing-container">
+            <div class="progress-info">
+                <span>Indexing & Embedding...</span>
+                <span>{{ processingProgress() }}%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" [style.width.%]="processingProgress()"></div>
+            </div>
+            <p class="processing-detail">
+                Current status: <span [class]="processingStatus()">{{ processingStatus() | titlecase }}</span>
+            </p>
+        </div>
+
+        <p *ngIf="message()" class="status-msg" [ngClass]="{'success': message().toLowerCase().includes('success'), 'error': message().toLowerCase().includes('fail') || message().toLowerCase().includes('failed')}">
             {{ message() }}
         </p>
     </div>

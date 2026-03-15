@@ -101,3 +101,51 @@
 
 .success { color: #10b981; }
 .error { color: #ef4444; }
+
+/* Processing Progress */
+.processing-container {
+    margin-top: 2rem;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    transition: width 0.5s ease-in-out;
+}
+
+.processing-detail {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.processing-detail span {
+    font-weight: 700;
+}
+
+.processing-detail span.pending { color: #f59e0b; }
+.processing-detail span.processing { color: #2563eb; }
+.processing-detail span.processed { color: #10b981; }
+.processing-detail span.error { color: #ef4444; }
