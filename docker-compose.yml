@@ -50,17 +50,10 @@ services:
       - postgres
       - mongo
       - rabbitmq
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    command: [ "npm", "run", "dev" ]
 
   frontend:
-    build: ./frontend
     container_name: ai_frontend
     restart: always
-    ports:
-      - "80:80"
     depends_on:
       - backend
 
@@ -84,9 +77,6 @@ services:
       CHROMA_URL: http://chroma:8000
       OPENAI_API_KEY: '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'
       GEMINI_API_KEY: 'AIzaSyC5AL_VtFS-LvB1I_WyW4zdSMe6luD6XaQ'
-    volumes:
-      - ./worker:/app
-      - /app/node_modules
 
   chroma:
     image: chromadb/chroma:1.4.1
@@ -96,6 +86,7 @@ services:
       - "8000:8000"
     volumes:
       - chroma_data:/chroma/.chroma/index
+
 volumes:
   postgres_data:
   mongo_data:

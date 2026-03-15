@@ -1,0 +1,16 @@
+FROM node:20
+
+WORKDIR /app
+
+# Enable corepack so the packageManager field in package.json is honoured
+RUN corepack enable
+
+COPY ai-frontend/package*.json ./
+RUN npm install
+
+# We don't COPY the source here because it will be mounted as a volume in docker-compose.dev.yml
+# This allows for hot reloading.
+
+EXPOSE 4200
+
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "4200", "--poll", "2000"]
