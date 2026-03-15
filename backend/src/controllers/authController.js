@@ -21,20 +21,21 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(`Login attempt for: ${email}`);
 
         const user = await findUserByEmail(email);
-        //no user
         if (!user) {
+            console.log(`User not found: ${email}`);
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        //password error 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            console.log(`Password mismatch for: ${email}`);
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        //generate token
+        console.log(`Login successful: ${email}`);
         const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
         res.status(200).json({ message: "Login successful", token, user });
     } catch (error) {
