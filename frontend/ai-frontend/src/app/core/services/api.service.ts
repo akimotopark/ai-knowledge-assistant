@@ -20,4 +20,8 @@ export class ApiService {
   postForm<T>(endpoint: string, formData: FormData) {
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, formData);
   }
+
+  delete<T>(endpoint: string) {
+    return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
+  }
 }

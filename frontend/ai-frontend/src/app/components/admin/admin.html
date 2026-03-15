@@ -21,6 +21,8 @@
                     <th>Status</th>
                     <th>Uploader</th>
                     <th>Date Added</th>
+                    <th>Description</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,15 +38,31 @@
                     </td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <div style="width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">👤</div>
+                            <div
+                                style="width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">
+                                👤</div>
                             {{ doc.uploaded_by }}
                         </div>
                     </td>
                     <td style="color: #64748b;">
                         {{ doc.created_at | date:'MMM d, y, h:mm a' }}
                     </td>
+                    <td style="color: #64748b; font-size: 0.875rem;">
+                        {{ doc.description || 'No description' }}
+                    </td>
+                    <td>
+                        <button (click)="openDeleteModal(doc.id, doc.title)" class="delete-btn" title="Delete Document">
+                            🗑️
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <!-- Custom Delete Confirmation Modal -->
+    <app-confirm-modal *ngIf="isDeleteModalOpen()" title="Delete Document"
+        [message]="'Are you sure you want to delete \'' + documentToDelete()?.title + '\'? This action cannot be undone and will remove all related data from all databases.'"
+        confirmText="Yes, Delete" cancelText="Keep Document" variant="danger" (confirm)="confirmDelete()"
+        (cancel)="closeDeleteModal()"></app-confirm-modal>
 </div>

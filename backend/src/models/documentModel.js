@@ -19,7 +19,13 @@ const getAllDocuments = async () => {
     return rows;
 };
 
+const deleteDocumentMetaData = async (id) => {
+    const query = 'DELETE FROM documents WHERE id = $1';
+    await pool.query(query, [id]);
+};
+
 module.exports = {
     createDocumentMetaData,
-    getAllDocuments
+    getAllDocuments,
+    deleteDocumentMetaData
 }

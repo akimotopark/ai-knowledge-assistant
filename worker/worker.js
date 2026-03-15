@@ -69,9 +69,28 @@ async function storeInChroma(documentId, chunks, embeddings) {
 async function startWorker() {
     // Wait for services to be ready
     console.log("Waiting for services to start...");
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    let connection;
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    while (attempts < maxAttempts) {
+        try {
+            connection = await amqp.connect(process.env.RABBITMQ_URL);
+            console.log("✅ Worker connected to RabbitMQ");
+            break;
+        } catch (err) {
+            attempts++;
+            console.log(`RabbitMQ connection attempt ${attempts} failed. Retrying in 5 seconds...`);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+    }
 
-    const connection = await amqp.connect(process.env.RABBITMQ_URL);
+    if (!connection) {
+        console.error("❌ Failed to connect to RabbitMQ after multiple attempts. Exiting.");
+        process.exit(1);
+    }
+
     const channel = await connection.createChannel();
     await channel.assertQueue('document_queue', { durable: true });
     await channel.prefetch(1);
