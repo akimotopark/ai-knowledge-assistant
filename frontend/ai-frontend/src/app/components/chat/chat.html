@@ -1,47 +1,97 @@
 <div class="chat-container">
-    <header class="chat-header">
-        <span class="status-dot"></span>
-        <h2>AI Knowledge Assistant</h2>
-    </header>
-
-    <div class="chat-box" #scrollMe>
-        @if (messages().length === 0) {
-            <div style="text-align: center; color: #94a3b8; margin: auto; padding: 2rem;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">👋</div>
-                <p>Hello! I'm your knowledge assistant.<br>Ask me anything about your documents.</p>
+    <!-- Sidebar for Chat History -->
+    <aside class="chat-sidebar">
+        <button class="new-chat-btn" (click)="createNewSession()">
+            <span>+</span> New Chat
+        </button>
+        
+        <div class="sessions-list">
+            <div *ngFor="let session of sessions()" 
+                 class="session-item"
+                 [class.active]="session.id === activeSessionId()"
+                 (click)="selectSession(session.id)">
+                <span class="session-icon">💬</span>
+                <span class="session-title" [title]="session.title">{{ session.title }}</span>
+                <button class="delete-session-btn" (click)="deleteSession($event, session.id)" title="Delete Chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
             </div>
-        }
-
-        <div *ngFor="let msg of messages()" class="message-wrapper" [ngClass]="msg.role">
-            <div class="bubble" [innerHTML]="parseMarkdown(msg.content)">
+            
+            <div *ngIf="sessions().length === 0" class="no-sessions">
+                No chat history found.
             </div>
-            <span class="meta">{{ msg.role === 'user' ? 'You' : 'Assistant' }}</span>
         </div>
+    </aside>
 
-        @if (loading()) {
-            <div class="message-wrapper assistant">
-                <div class="bubble">
-                    <div class="typing">
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
+    <!-- Main Chat Area -->
+    <main class="chat-main">
+        <header class="chat-header">
+            <span class="status-dot"></span>
+            <h2>AI Knowledge Assistant</h2>
+        </header>
+
+        <div class="chat-box" #scrollMe>
+            @if (messages().length === 0 && !loading()) {
+                <div style="text-align: center; color: #94a3b8; margin: auto; padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👋</div>
+                    <p style="font-size: 1.125rem;">Hello! I'm your knowledge assistant.<br>Ask me anything about your documents.</p>
+                </div>
+            }
+
+            <div *ngFor="let msg of messages()" class="message-wrapper" [ngClass]="msg.role">
+                <div class="bubble" [innerHTML]="parseMarkdown(msg.content)">
+                </div>
+                <!-- <span class="meta">{{ msg.role === 'user' ? 'You' : 'Assistant' }}</span> -->
+            </div>
+
+            @if (loading()) {
+                <div class="message-wrapper assistant">
+                    <div class="bubble">
+                        <div class="typing">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-
-    <div class="input-area-wrapper">
-        <div class="input-container">
-            <input type="text" 
-                   [ngModel]="question()" 
-                   (ngModelChange)="question.set($event)" 
-                   placeholder="Type your message..."
-                   (keyup.enter)="sendQuestion()">
-            
-            <button (click)="sendQuestion()" [disabled]="loading() || !question().trim()">
-                <span class="send-icon">🚀</span>
-            </button>
+            }
         </div>
-    </div>
+
+        <div class="input-area-wrapper">
+            <div class="input-container">
+                <input type="text" 
+                       [ngModel]="question()" 
+                       (ngModelChange)="question.set($event)" 
+                       placeholder="Type your message..."
+                       (keyup.enter)="sendQuestion()"
+                       [disabled]="!activeSessionId()">
+                
+                <button (click)="sendQuestion()" [disabled]="loading() || !question().trim() || !activeSessionId()">
+                    <!-- SVG Send Icon instead of emoji string for better alignment -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-footer">
+                AI Knowledge Assistant can make mistakes. Consider verifying important information based on your documents.
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Delete Confirmation Modal -->
+    <app-confirm-modal
+        *ngIf="isDeleteModalOpen()"
+        title="Delete Chat"
+        message="Are you sure you want to delete this chat history? This action cannot be undone."
+        confirmText="Delete History"
+        cancelText="Keep Chat"
+        variant="danger"
+        (confirm)="confirmDeleteSession()"
+        (cancel)="closeDeleteModal()"
+    ></app-confirm-modal>
 </div>

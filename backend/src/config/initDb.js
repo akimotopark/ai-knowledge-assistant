@@ -31,16 +31,30 @@ const tables = [
             );
         `,
     },
-    // Add more tables here, e.g.:
-    // {
-    //     name: 'tags',
-    //     sql: `
-    //         CREATE TABLE IF NOT EXISTS tags (
-    //             id SERIAL PRIMARY KEY,
-    //             name VARCHAR(100) UNIQUE NOT NULL
-    //         );
-    //     `,
-    // },
+    {
+        name: 'chat_sessions',
+        sql: `
+            CREATE TABLE IF NOT EXISTS chat_sessions (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                title VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `,
+    },
+    {
+        name: 'chat_messages',
+        sql: `
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id SERIAL PRIMARY KEY,
+                session_id INTEGER REFERENCES chat_sessions(id) ON DELETE CASCADE,
+                role VARCHAR(50) NOT NULL, -- 'user' or 'assistant'
+                content TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `,
+    },
 ];
 
 const initDb = async () => {
