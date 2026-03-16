@@ -8,7 +8,7 @@ const {
     createMessage,
     getMessagesBySession
 } = require('../models/chatModel');
-const { chroma, geminiEmbeddingModel, geminiLanguageModel } = require("../utils/aiClient");
+const { chroma, llm } = require("../utils/aiClient");
 
 // --- Sessions ---
 const getSessions = async (req, res) => {
@@ -65,14 +65,6 @@ const getMessages = async (req, res) => {
     }
 };
 
-async function generateQueryEmbedding(question) {
-    const result = await geminiEmbeddingModel.embedContent({
-        content: { parts: [{ text: question }] },
-        taskType: "RETRIEVAL_QUERY",
-    });
-    return result.embedding.values;
-}
-
 const sendMessage = async (req, res) => {
     try {
         const { id: sessionId } = req.params;
@@ -114,7 +106,7 @@ const sendMessage = async (req, res) => {
         // 3. RAG Retrieval via ChromaDB
         let context = "";
         try {
-            const queryEmbedding = await generateQueryEmbedding(content);
+            const queryEmbedding = await llm.generateEmbedding(content, "RETRIEVAL_QUERY");
             const collection = await chroma.getOrCreateCollection({ name: "documents" });
             
             // Check if collection has data before querying
@@ -146,8 +138,7 @@ const sendMessage = async (req, res) => {
         Assistant Answer: 
         `;
 
-        const result = await geminiLanguageModel.generateContent(prompt);
-        const answer = result.response.text();
+        const answer = await llm.generateText(prompt);
 
         // 5. Save and return assistant's response
         const assistantMsg = await createMessage(sessionId, 'assistant', answer);

@@ -1,13 +1,4 @@
-const { openai, chroma, geminiEmbeddingModel, geminiLanguageModel } = require("../utils/aiClient");
-
-// Generate embedding for query using Gemini
-async function generateQueryEmbedding(question) {
-    const result = await geminiEmbeddingModel.embedContent({
-        content: { parts: [{ text: question }] },
-        taskType: "RETRIEVAL_QUERY",
-    });
-    return result.embedding.values;
-}
+const { chroma, llm } = require("../utils/aiClient");
 
 async function askQuestion(req, res) {
     try {
@@ -16,7 +7,7 @@ async function askQuestion(req, res) {
             return res.status(400).json({ message: "Question is required" });
         }
         // 1️⃣ Generate embedding for question
-        const queryEmbedding = await generateQueryEmbedding(question);
+        const queryEmbedding = await llm.generateEmbedding(question, "RETRIEVAL_QUERY");
         // 2️⃣ Query Chroma
         console.log("Querying Chroma for question:", question);
         const collection = await chroma.getOrCreateCollection({
@@ -48,8 +39,7 @@ async function askQuestion(req, res) {
 
         // 4️⃣ Call LLM
         console.log("Calling LLM with prompt context length:", context.length);
-        const result = await geminiLanguageModel.generateContent(prompt);
-        const answer = result.response.text();
+        const answer = await llm.generateText(prompt);
 
         console.log("LLM response received successfully");
         return res.json({ answer });

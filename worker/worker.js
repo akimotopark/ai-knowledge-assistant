@@ -3,13 +3,8 @@ const amqp = require('amqplib');
 const mongoose = require('mongoose');
 const { Pool } = require('pg');
 const { ChromaClient } = require('chromadb');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-const OpenAI = require('openai');
+const llm = require('./utils/llmProvider');
 const DocumentContent = require('./models/documentContent');
-
-// connect Gemini AI api
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const geminiEmbeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
 //create chroma 
 const chroma = new ChromaClient({ path: process.env.CHROMA_URL });
@@ -36,15 +31,6 @@ function chunkText(text, chunkSize = 500, overlap = 50) {
         chunks.push(text.slice(i, i + chunkSize));
     }
     return chunks;
-}
-
-//generate embeddings using Gemini
-async function generateEmbedding(text) {
-    const response = await geminiEmbeddingModel.embedContent({
-        content: { parts: [{ text }] },
-        taskType: "RETRIEVAL_DOCUMENT",
-    });
-    return response.embedding.values;
 }
 
 //store vector in chroma
@@ -123,7 +109,7 @@ async function startWorker() {
             for (let i = 0; i < chunks.length; i++) {
                 const chunk = chunks[i];
                 try {
-                    const embedding = await generateEmbedding(chunk);
+                    const embedding = await llm.generateEmbedding(chunk, "RETRIEVAL_DOCUMENT");
                     embeddings.push(embedding);
                     console.log(`  Processed ${i + 1}/${chunks.length} chunks...`);
                     // Delay to stay within Gemini free tier rate limits (~15 RPM)
